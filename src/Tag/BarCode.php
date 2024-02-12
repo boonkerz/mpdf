@@ -225,7 +225,7 @@ class BarCode extends Tag
 					$objattr['disableborder'] = (bool) $attr['DISABLEBORDER'];
 				}
 
-			}elseif ($objattr['btype'] === 'QRE') { // QR-code
+			}elseif ($objattr['btype'] === 'QRCH') { // QR-code
 				$w = $h = $objattr['bsize'] * 25; // Factor of 25mm (default)
 				$objattr['errorlevel'] = 'L';
 				if (isset($attr['ERROR'])) {

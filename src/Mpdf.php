@@ -7447,34 +7447,89 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 						(isset($objattr['bsupp_code']) ? $objattr['bsupp_code'] : ''),
 						$k
 					);
-                } elseif ($objattr['btype'] === 'QR' || $objattr['btype'] === 'QRE') {
+                } elseif ($objattr['btype'] === 'QR' || $objattr['btype'] === 'QRCH') {
 
-                    if($objattr['btype'] === 'QRE' && class_exists('BaconQrCode\Renderer\MpdfRenderer')) {
+                    if($objattr['btype'] === 'QRCH' && class_exists('chillerlan\QRCode\QRCode')) {
                         $barcodeContent = str_replace('\r\n', "\r\n", $objattr['code']);
                         $barcodeContent = str_replace('\n', "\n", $barcodeContent);
 
-                        $black = new \BaconQrCode\Renderer\Color\Cmyk(0,0,0,100);
-                        $white = new \BaconQrCode\Renderer\Color\Cmyk(0,0,0,0);
-                        $red = new \BaconQrCode\Renderer\Color\Cmyk(0,100,100,0);
+                        $bgColor = [255, 255, 255];
+                        if ($objattr['bgcolor']) {
+                            $bgColor = array_map(
+                                function ($col) {
+                                    return intval(255 * floatval($col));
+                                },
+                                explode(" ", $this->SetColor($objattr['bgcolor'], 'CodeOnly'))
+                            );
+                        }
+                        $color = [0, 0, 0];
+                        if ($objattr['color']) {
+                            $color = array_map(
+                                function ($col) {
+                                    return intval(255 * floatval($col));
+                                },
+                                explode(" ", $this->SetColor($objattr['color'], 'CodeOnly'))
+                            );
+                        }
+                        $finderDotBgColor = [0, 0, 0];
+                        if ($objattr['finderdotbgcolor']) {
+                            $finderDotBgColor = array_map(
+                                function ($col) {
+                                    return intval(255 * floatval($col));
+                                },
+                                explode(" ", $this->SetColor($objattr['finderdotbgcolor'], 'CodeOnly'))
+                            );
+                        }
+                        $finderDotDarkBgColor = [0, 0, 0];
+                        if ($objattr['finderdotdarkbgcolor']) {
+                            $finderDotDarkBgColor = array_map(
+                                function ($col) {
+                                    return intval(255 * floatval($col));
+                                },
+                                explode(" ", $this->SetColor($objattr['finderdotdarkbgcolor'], 'CodeOnly'))
+                            );
+                        }
 
-                        $ef = new \BaconQrCode\Renderer\RendererStyle\EyeFill($black, $red);
+                        $options = new \chillerlan\QRCode\QROptions();
+                        $options->mpdf = $this;
+                        $options->scale = $objattr['bsize'];
+                        $options->returnResource = true;
+                        $options->bgColor          = $bgColor;
+                        $options->moduleValues     = [
+                            // finder
+                            \chillerlan\QRCode\Data\QRMatrix::M_FINDER_DARK    => $finderDotDarkBgColor,
+                            \chillerlan\QRCode\Data\QRMatrix::M_FINDER_DOT     => $finderDotBgColor,
+                            \chillerlan\QRCode\Data\QRMatrix::M_FINDER         => $bgColor,
+// alignment
+                            \chillerlan\QRCode\Data\QRMatrix::M_ALIGNMENT_DARK => $color,
+                            \chillerlan\QRCode\Data\QRMatrix::M_ALIGNMENT => $bgColor,
+                            // timing
+                            \chillerlan\QRCode\Data\QRMatrix::M_TIMING_DARK    => $color,
+                            \chillerlan\QRCode\Data\QRMatrix::M_TIMING    => $bgColor,
+                            // format
+                            \chillerlan\QRCode\Data\QRMatrix::M_FORMAT_DARK    => $color,
+                            \chillerlan\QRCode\Data\QRMatrix::M_FORMAT    => $bgColor,
+                            // version
+                            \chillerlan\QRCode\Data\QRMatrix::M_VERSION_DARK   => $color,
+                            \chillerlan\QRCode\Data\QRMatrix::M_VERSION   => $bgColor,
+                            // data
+                            \chillerlan\QRCode\Data\QRMatrix::M_DATA_DARK      => $color,
+                            \chillerlan\QRCode\Data\QRMatrix::M_DATA      => $bgColor,
+                            // darkmodule
+                            \chillerlan\QRCode\Data\QRMatrix::M_DARKMODULE     => $color,
+                            // separator
+                            \chillerlan\QRCode\Data\QRMatrix::M_QUIETZONE     => $bgColor,
+                            \chillerlan\QRCode\Data\QRMatrix::M_SEPARATOR     => $bgColor,
+                        ];
 
-                        $fill = \BaconQrCode\Renderer\RendererStyle\Fill::withForegroundColor(
-                            $white,
-                            $black,
-                            $ef,
-                            $ef,
-                            $ef
-                        );
+                        $qrcode = new \chillerlan\QRCode\QRCode($options);
+                        $qrcode->addByteSegment($barcodeContent);
 
-                        $rs = new \BaconQrCode\Renderer\RendererStyle\RendererStyle(size: $objattr['bsize'] * 25, fill: $fill, x: $objattr['INNER-X'], y: $objattr['INNER-Y']);
-
-                        $renderer = new \BaconQrCode\Renderer\MpdfRenderer(
-                            $rs,
-                            $this
-                        );
-
-                        $renderer->render(\BaconQrCode\Encoder\Encoder::encode($barcodeContent, \BaconQrCode\Common\ErrorCorrectionLevel::L(), \BaconQrCode\Encoder\Encoder::DEFAULT_BYTE_MODE_ECODING, null));
+                        $qrOutputInterface = new \chillerlan\QRCode\Output\QRMpdf($options, $qrcode->getQRMatrix(), $this);
+                        if ($objattr['disableborder']) {
+                            $qrOutputInterface->disableBorder();
+                        }
+                        $qrOutputInterface->dump();
 
                     }elseif (class_exists('Mpdf\QrCode\QrCode') || !class_exists('Mpdf\QrCode\Output\Mpdf')) {
                         $barcodeContent = str_replace('\r\n', "\r\n", $objattr['code']);

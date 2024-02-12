@@ -1692,6 +1692,18 @@ class CssManager
 			$p['COLOR'] = $attr['COLOR'];
 		}
 
+        if ($tag === 'BARCODE') {
+            if(isset($attr['BGCOLOR'])) {
+                $p['BACKGROUND-COLOR'] = $attr['BGCOLOR'];
+            }
+            if(isset($attr['FINDERDOTDARK'])) {
+                $p['FINDERDOTDARK-BACKGROUND-COLOR'] = $attr['FINDERDOTDARK'];
+            }
+            if(isset($attr['FINDERDOT'])) {
+                $p['FINDERDOT-BACKGROUND-COLOR'] = $attr['FINDERDOT'];
+            }
+
+        }
 		if ($tag !== 'INPUT') {
 			if (isset($attr['WIDTH']) && $attr['WIDTH'] != '') {
 				$p['WIDTH'] = $attr['WIDTH'];

@@ -179,6 +179,18 @@ class BarCode extends Tag
 				$objattr['bgcolor'] = false;
 			}
 
+			if (isset($properties['FINDERDOTDARK-BACKGROUND-COLOR']) && $properties['FINDERDOTDARK-BACKGROUND-COLOR'] != '') {
+				$objattr['finderdotdarkbgcolor'] = $this->colorConverter->convert($properties['FINDERDOTDARK-BACKGROUND-COLOR'], $this->mpdf->PDFAXwarnings);
+			} else {
+				$objattr['finderdotdarkbgcolor'] = $objattr['bgcolor'] ;
+			}
+
+			if (isset($properties['FINDERDOT-BACKGROUND-COLOR']) && $properties['FINDERDOT-BACKGROUND-COLOR'] != '') {
+				$objattr['finderdotbgcolor'] = $this->colorConverter->convert($properties['FINDERDOT-BACKGROUND-COLOR'], $this->mpdf->PDFAXwarnings);
+			} else {
+				$objattr['finderdotbgcolor'] = $objattr['bgcolor'] ;
+			}
+
 			$this->barcode = new \Mpdf\Barcode();
 
 			if (in_array($objattr['btype'], ['EAN13', 'ISBN', 'ISSN', 'UPCA', 'UPCE', 'EAN8'])) {

@@ -7492,7 +7492,6 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 
                         $options = new \chillerlan\QRCode\QROptions();
                         $options->mpdf = $this;
-                        $options->scale = $objattr['bsize'];
                         $options->returnResource = true;
                         $options->bgColor          = $bgColor;
                         $options->moduleValues     = [
@@ -7525,7 +7524,7 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
                         $qrcode = new \chillerlan\QRCode\QRCode($options);
                         $qrcode->addByteSegment($barcodeContent);
 
-                        $qrOutputInterface = new \chillerlan\QRCode\Output\QRMpdf($options, $qrcode->getQRMatrix(), $this);
+                        $qrOutputInterface = new \chillerlan\QRCode\Output\QRMpdf($options, $qrcode->getQRMatrix(), $this, $objattr['INNER-X'], $objattr['INNER-Y'], $objattr['bsize'] * 25);
                         if ($objattr['disableborder']) {
                             $qrOutputInterface->disableBorder();
                         }

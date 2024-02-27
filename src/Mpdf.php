@@ -14690,7 +14690,7 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 			if ($target > 0) {
 				if (($ratio / $target) > 1) {
                     if($overflow == "autowidth") {
-                        $est_w = $this->GetStringWidth($checkinnerhtml)*1.12;
+                        $est_w = $this->GetStringWidth($checkinnerhtml)*1.3;
                         $use_w += ($est_w - $use_w) - ($w / 100);
                     }else {
                         $nl = ceil($actual_h / $this->lineheight);

@@ -26505,7 +26505,7 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 			$charRI = substr($code, 7, 6); // Right Inner
 
 			if (!$supplement) {
-				$charRO = '>'; // Right Outer
+				//$charRO = '>'; // Right Outer
 			}
 
 		} elseif ($btype === 'UPCA') {
@@ -26545,7 +26545,7 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 			$charRI = substr($code, 4, 4); // Right Inner
 
 			if (!$supplement) {
-				$charRO = '>'; // Right Outer
+				//$charRO = '>'; // Right Outer
 			}
 		}
 
